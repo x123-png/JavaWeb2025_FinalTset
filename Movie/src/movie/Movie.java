@@ -12,7 +12,7 @@ public class Movie {
     private String genre;
     private String plotSummary;
     private BigDecimal averageRating;
-    private String posterUrl;
+    private String picture;
     private Date createdAt;
     private Date updatedAt;
 
@@ -21,7 +21,7 @@ public class Movie {
 
     public Movie(int movieId, String movieTitle, Integer releaseYear, String region,
                  String language, String genre, String plotSummary, BigDecimal averageRating,
-                 String posterUrl, Date createdAt, Date updatedAt) {
+                 String picture, Date createdAt, Date updatedAt) {
         this.movieId = movieId;
         this.movieTitle = movieTitle;
         this.releaseYear = releaseYear;
@@ -30,7 +30,7 @@ public class Movie {
         this.genre = genre;
         this.plotSummary = plotSummary;
         this.averageRating = averageRating;
-        this.posterUrl = posterUrl;
+        this.picture = picture;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -101,12 +101,12 @@ public class Movie {
     }
 
 
-    public String getPosterUrl() {
-        return posterUrl;
+    public String getPicture() {
+        return picture;
     }
 
-    public void setPosterUrl(String posterUrl) {
-        this.posterUrl = posterUrl;
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public Date getCreatedAt() {
@@ -136,7 +136,7 @@ public class Movie {
                 ", genre='" + genre + '\'' +
                 ", plotSummary='" + plotSummary + '\'' +
                 ", averageRating=" + averageRating +
-                ", posterUrl='" + posterUrl + '\'' +
+                ", picture='" + picture + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

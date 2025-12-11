@@ -22,7 +22,7 @@ public class MovieResultSetVisitor implements ResultSetVisitor<Movie> {
             movie.setGenre(rs.getString("genre"));
             movie.setPlotSummary(rs.getString("plot_summary"));
             movie.setAverageRating(rs.getObject("average_rating", BigDecimal.class));
-            movie.setPosterUrl(rs.getString("poster_url"));
+            movie.setPicture(rs.getString("picture"));
             movie.setCreatedAt(rs.getTimestamp("created_at"));
             movie.setUpdatedAt(rs.getTimestamp("updated_at"));
             movies.add(movie);

@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import repo.DatabaseService;
 import repo.MovieResultSetVisitor;
 
@@ -33,6 +34,38 @@ public class MovieService extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String searchKeyword = request.getParameter("keyword"); // For search functionality
+        String methodParam = request.getParameter("method"); // To handle delete via GET
+        String movieIdStr = request.getParameter("movie_id"); // For delete functionality
+
+        // Handle delete via GET request with method parameter
+        if ("DELETE".equals(methodParam) && movieIdStr != null) {
+            try {
+                int movieId = Integer.parseInt(movieIdStr);
+
+                // Delete movie from database
+                ServletContext context = request.getServletContext();
+                DatabaseService service = (DatabaseService)context.getAttribute(DatabaseService.CONTEXT_KEY);
+
+                String deleteSql = String.format("DELETE FROM movies WHERE movie_id = %d", movieId);
+
+                int result = service.update(deleteSql);
+
+                if(result > 0) {
+                    // Redirect back to movies list
+                    response.sendRedirect("./movies");
+                    return;
+                } else {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete movie");
+                    return;
+                }
+
+            } catch (Exception e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid movie ID");
+                e.printStackTrace();
+                return;
+            }
+        }
+
         String acceptHeader = request.getHeader("Accept");
 
         ServletContext context = request.getServletContext();
@@ -68,7 +101,40 @@ public class MovieService extends HttpServlet {
                 response.setCharacterEncoding("UTF-8");
                 try(Writer writer = response.getWriter()) {
                     String tableHtml = utils.MovieHelper.buildMoviesTable(movies);
-                    writer.write(tableHtml);
+                    String fullHtml = String.format(
+                        "<!DOCTYPE html>" +
+                        "<html><head><meta charset='UTF-8'><title>电影列表</title>" +
+                        "<style>" +
+                        "body { font-family: Arial, sans-serif; margin: 20px; }" +
+                        ".tb-movie { border-collapse: collapse; width: 100%%; }" +
+                        ".tb-movie th, .tb-movie td { border: 1px solid #ddd; padding: 8px; text-align: left; }" +
+                        ".tb-movie th { background-color: #f2f2f2; }" +
+                        "a { color: #007bff; text-decoration: none; }" +
+                        "a:hover { text-decoration: underline; }" +
+                        "</style></head><body>" +
+                        "%s" +
+                        "<script>" +
+                        "function confirmDelete(id) {" +
+                        "    if(confirm('确定要删除这部电影吗？')) {" +
+                        "        var xhr = new XMLHttpRequest();" +
+                        "        xhr.open('DELETE', './movies?movie_id=' + id, true);" +
+                        "        xhr.onreadystatechange = function() {" +
+                        "            if (xhr.readyState === 4) {" +
+                        "                if (xhr.status === 200) {" +
+                        "                    alert('电影删除成功'); window.location.reload();" +
+                        "                } else {" +
+                        "                    alert('删除失败'); window.location.reload();" +
+                        "                }" +
+                        "            }" +
+                        "        };" +
+                        "        xhr.send();" +
+                        "    }" +
+                        "}" +
+                        "</script>" +
+                        "</body></html>",
+                        tableHtml
+                    );
+                    writer.write(fullHtml);
                     writer.flush();
                 }
             }
@@ -80,6 +146,7 @@ public class MovieService extends HttpServlet {
     // Handle POST requests for adding a new movie
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8"); // Ensure proper encoding for parameters
         try {
             // Read JSON data from request
             StringBuilder buffer = new StringBuilder();
@@ -105,12 +172,12 @@ public class MovieService extends HttpServlet {
             String genre = (movie.getGenre() != null) ? movie.getGenre().replace("'", "''") : "";
             String plotSummary = (movie.getPlotSummary() != null) ? movie.getPlotSummary().replace("'", "''") : "";
             String averageRating = (movie.getAverageRating() != null) ? movie.getAverageRating().toString() : "NULL";
-            String posterUrl = (movie.getPosterUrl() != null) ? movie.getPosterUrl().replace("'", "''") : "";
+            String picture = (movie.getPicture() != null) ? movie.getPicture().replace("'", "''") : "";
 
             // Format SQL with values to bypass prepared statement issue in current setup
             String insertSql = String.format(
-                "INSERT INTO movies (movie_title, release_year, region, language, genre, plot_summary, average_rating, poster_url) VALUES ('%s', %s, '%s', '%s', '%s', '%s', %s, '%s')",
-                title, releaseYear, region, language, genre, plotSummary, averageRating, posterUrl
+                "INSERT INTO movies (movie_title, release_year, region, language, genre, plot_summary, average_rating, picture) VALUES ('%s', %s, '%s', '%s', '%s', '%s', %s, '%s')",
+                title, releaseYear, region, language, genre, plotSummary, averageRating, picture
             );
 
             // 将"NULL"替换为真正的NULL（在SQL中不需要引号）
@@ -141,6 +208,7 @@ public class MovieService extends HttpServlet {
     // Handle PUT requests for updating a movie
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8"); // Ensure proper encoding for parameters
         try {
             String movieIdStr = request.getParameter("movie_id");
             int movieId = Integer.parseInt(movieIdStr);
@@ -153,7 +221,7 @@ public class MovieService extends HttpServlet {
             String genre = request.getParameter("genre");
             String plotSummary = request.getParameter("plot_summary");
             String averageRatingParam = request.getParameter("average_rating");
-            String posterUrl = request.getParameter("poster_url");
+            String picture = request.getParameter("picture");
 
             // Convert string parameters to appropriate types
             Integer releaseYear = (releaseYearParam != null && !releaseYearParam.isEmpty()) ? Integer.valueOf(releaseYearParam) : null;
@@ -171,12 +239,12 @@ public class MovieService extends HttpServlet {
             String genreUpdateStr = genre != null ? genre.replace("'", "''") : "";
             String plotSummaryUpdateStr = plotSummary != null ? plotSummary.replace("'", "''") : "";
             String averageRatingUpdateStr = (averageRating != null) ? averageRating.toString() : "NULL";
-            String posterUrlUpdateStr = posterUrl != null ? posterUrl.replace("'", "''") : "";
+            String pictureUpdateStr = picture != null ? picture.replace("'", "''") : "";
 
             // Format SQL with values to bypass prepared statement issue in current setup
             String updateSql = String.format(
-                "UPDATE movies SET movie_title='%s', release_year=%s, region='%s', language='%s', genre='%s', plot_summary='%s', average_rating=%s, poster_url='%s', updated_at=NOW() WHERE movie_id=%d",
-                titleUpdateStr, releaseYearUpdateStr, regionUpdateStr, languageUpdateStr, genreUpdateStr, plotSummaryUpdateStr, averageRatingUpdateStr, posterUrlUpdateStr, movieId
+                "UPDATE movies SET movie_title='%s', release_year=%s, region='%s', language='%s', genre='%s', plot_summary='%s', average_rating=%s, picture='%s', updated_at=NOW() WHERE movie_id=%d",
+                titleUpdateStr, releaseYearUpdateStr, regionUpdateStr, languageUpdateStr, genreUpdateStr, plotSummaryUpdateStr, averageRatingUpdateStr, pictureUpdateStr, movieId
             );
 
             // 将"NULL"替换为真正的NULL（在SQL中不需要引号）

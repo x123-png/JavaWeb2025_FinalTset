@@ -23,7 +23,7 @@ public class MovieHelper {
                 <td align='center'>%s</td>
                 <td align='center'>
                     <a href='./updateMovie?id=%d'>Edit</a> |
-                    <a href='./deleteMovie?id=%d' onclick='return confirm(\"Are you sure?\")'>Delete</a>
+                    <a href='#' onclick='confirmDelete(%d); return false;'>Delete</a>
                 </td>
             </tr>
         """;

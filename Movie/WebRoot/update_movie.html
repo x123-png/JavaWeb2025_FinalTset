@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新电影</title>
+    <link rel="stylesheet" type="text/css" href="css/movie.css">
+</head>
+<body>
+    <div class="container">
+        <h1>更新电影信息</h1>
+
+        <div class="form-container">
+            <form id="movieForm" action="../updateMovie" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="movie_id" id="movieId" value="">
+                
+                <div class="form-group">
+                    <label for="movieTitle">电影标题:</label>
+                    <input type="text" id="movieTitle" name="movie_title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="releaseYear">发布年份:</label>
+                    <input type="number" id="releaseYear" name="release_year">
+                </div>
+
+                <div class="form-group">
+                    <label for="region">地区:</label>
+                    <input type="text" id="region" name="region">
+                </div>
+
+                <div class="form-group">
+                    <label for="language">语言:</label>
+                    <input type="text" id="language" name="language">
+                </div>
+
+                <div class="form-group">
+                    <label for="genre">类型:</label>
+                    <input type="text" id="genre" name="genre">
+                </div>
+
+                <div class="form-group">
+                    <label for="plotSummary">剧情简介:</label>
+                    <textarea id="plotSummary" name="plot_summary"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="averageRating">平均评分:</label>
+                    <input type="number" id="averageRating" name="average_rating" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="posterFile">海报图片:</label>
+                    <input type="file" id="posterFile" name="poster_file" accept="image/*">
+                    <div id="currentPoster"></div>
+                </div>
+
+                <button type="submit">更新电影</button>
+                <button type="button" onclick="history.back()">返回</button>
+            </form>
+        </div>
+
+        <a href="index.html">返回电影列表</a>
+    </div>
+
+    <script>
+        // 从URL参数中获取电影ID并加载电影信息
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 获取电影信息并填充表单
+        function loadMovieInfo() {
+            const movieId = getUrlParameter('id');
+            if (!movieId) {
+                alert('未指定电影ID');
+                return;
+            }
+
+            // 设置隐藏域中的ID
+            document.getElementById('movieId').value = movieId;
+
+            // 从后端获取电影信息
+            fetch('./movies', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(movies => {
+                const movie = movies.find(m => m.movieId == movieId);
+                if (movie) {
+                    document.getElementById('movieTitle').value = movie.movieTitle || '';
+                    document.getElementById('releaseYear').value = movie.releaseYear || '';
+                    document.getElementById('region').value = movie.region || '';
+                    document.getElementById('language').value = movie.language || '';
+                    document.getElementById('genre').value = movie.genre || '';
+                    document.getElementById('plotSummary').value = movie.plotSummary || '';
+                    document.getElementById('averageRating').value = movie.averageRating || '';
+                    
+                    // 显示当前海报
+                    if (movie.posterUrl && movie.posterUrl !== '') {
+                        const currentPosterDiv = document.getElementById('currentPoster');
+                        currentPosterDiv.innerHTML = '<p>当前海报: <a href="' + movie.posterUrl + '" target="_blank">查看海报</a></p>';
+                    }
+                } else {
+                    alert('未找到指定电影');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('获取电影信息时发生错误');
+            });
+        }
+
+        // 页面加载完成后执行
+        window.onload = loadMovieInfo;
+    </script>
+</body>
+</html>

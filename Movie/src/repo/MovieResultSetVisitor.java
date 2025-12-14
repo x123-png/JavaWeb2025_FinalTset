@@ -14,17 +14,15 @@ public class MovieResultSetVisitor implements ResultSetVisitor<Movie> {
         List<Movie> movies = new ArrayList<>();
         while( rs.next()) {
             Movie movie = new Movie();
-            movie.setMovieId(rs.getInt("movie_id"));
-            movie.setMovieTitle(rs.getString("movie_title"));
-            movie.setReleaseYear(rs.getObject("release_year", Integer.class));
+            movie.setMovieId(rs.getInt("movieId"));
+            movie.setMovieTitle(rs.getString("movieTitle"));
+            movie.setReleaseYear(rs.getDate("releaseYear"));
             movie.setRegion(rs.getString("region"));
             movie.setLanguage(rs.getString("language"));
             movie.setGenre(rs.getString("genre"));
-            movie.setPlotSummary(rs.getString("plot_summary"));
-            movie.setAverageRating(rs.getObject("average_rating", BigDecimal.class));
+            movie.setPlotSummary(rs.getString("plotSummary"));
+            movie.setAverageRating(rs.getDouble("averageRating"));
             movie.setPicture(rs.getString("picture"));
-            movie.setCreatedAt(rs.getTimestamp("created_at"));
-            movie.setUpdatedAt(rs.getTimestamp("updated_at"));
             movies.add(movie);
         }
         return movies;

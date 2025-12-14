@@ -77,4 +77,8 @@ public class DatabaseService {
         }
     }
 
+    public BasicDataSource getDataSource() {
+        return this.dataSource;
+    }
+
 }

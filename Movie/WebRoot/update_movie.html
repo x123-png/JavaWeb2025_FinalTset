@@ -11,17 +11,17 @@
         <h1>更新电影信息</h1>
 
         <div class="form-container">
-            <form id="movieForm" action="../updateMovie" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="movie_id" id="movieId" value="">
-                
+            <form id="movieForm" action="./updateMovie" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="movieId" id="movieId" value="">
+
                 <div class="form-group">
                     <label for="movieTitle">电影标题:</label>
-                    <input type="text" id="movieTitle" name="movie_title" required>
+                    <input type="text" id="movieTitle" name="movieTitle" required>
                 </div>
 
                 <div class="form-group">
                     <label for="releaseYear">发布年份:</label>
-                    <input type="number" id="releaseYear" name="release_year">
+                    <input type="number" id="releaseYear" name="releaseYear">
                 </div>
 
                 <div class="form-group">
@@ -41,17 +41,17 @@
 
                 <div class="form-group">
                     <label for="plotSummary">剧情简介:</label>
-                    <textarea id="plotSummary" name="plot_summary"></textarea>
+                    <textarea id="plotSummary" name="plotSummary"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="averageRating">平均评分:</label>
-                    <input type="number" id="averageRating" name="average_rating" step="0.01">
+                    <input type="number" id="averageRating" name="averageRating" step="0.01">
                 </div>
 
                 <div class="form-group">
-                    <label for="posterFile">海报图片:</label>
-                    <input type="file" id="posterFile" name="poster_file" accept="image/*">
+                    <label for="picture">海报图片:</label>
+                    <input type="file" id="picture" name="picture" accept="image/*">
                     <div id="currentPoster"></div>
                 </div>
 

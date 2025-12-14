@@ -1,96 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电影列表</title>
-    <link rel="stylesheet" type="text/css" href="css/movie.css">
-</head>
-<body>
-    <div class="container">
-        <h1>电影列表</h1>
-        <a href="add_movie.html">添加新电影</a>
-
-        <div id="moviesTable">
-            <!-- 电影表格将通过JavaScript从服务器获取并动态显示 -->
-            <p>正在加载电影数据...</p>
+    <head>
+        <meta charset="utf-8">
+        <title>剧光</title>
+        <link rel="stylesheet" href="../css/movie.css" />
+    </head>
+    <body>
+        <center>
+        <br><h1>欢迎访问剧光</h1>
+        <div>
+            <a href="./add_movie.html"> 添加电影 </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!--            <a href="./logout"> 退出系统 </a>-->
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
-    </div>
-
-    <script>
-        // 页面加载完成后获取并显示电影数据
-        document.addEventListener('DOMContentLoaded', function() {
-            loadMovies();
-        });
-
-        // 加载电影数据
-        function loadMovies() {
-            fetch('./movies')
-                .then(response => response.json())
-                .then(movies => {
-                    const moviesTable = document.getElementById('moviesTable');
-                    if (movies.length > 0) {
-                        let tableHTML = '<table class="tb-movie"><tr>' +
-                            '<th>ID</th><th>标题</th><th>年份</th><th>地区</th><th>语言</th><th>类型</th><th>评分</th><th>操作</th>' +
-                            '</tr>';
-
-                        movies.forEach(movie => {
-                            const yearStr = movie.releaseYear || 'N/A';
-                            const ratingStr = movie.averageRating ? movie.averageRating.toString() : 'N/A';
-
-                            tableHTML += `
-                                <tr>
-                                    <td align='center'>${movie.movieId}</td>
-                                    <td>${movie.movieTitle}</td>
-                                    <td align='center'>${yearStr}</td>
-                                    <td align='center'>${movie.region}</td>
-                                    <td align='center'>${movie.language}</td>
-                                    <td align='center'>${movie.genre}</td>
-                                    <td align='center'>${ratingStr}</td>
-                                    <td align='center' class='actions'>
-                                        <a href='#' onclick='editMovie(${movie.movieId})'>Edit</a> |
-                                        <a href='#' onclick='deleteMovie(${movie.movieId})'>Delete</a>
-                                    </td>
-                                </tr>
-                            `;
-                        });
-
-                        tableHTML += '</table>';
-                        moviesTable.innerHTML = tableHTML;
-                    } else {
-                        moviesTable.innerHTML = '<p>没有找到电影数据</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('moviesTable').innerHTML = '<p>加载电影数据时发生错误</p>';
-                });
-        }
-
-        // 编辑电影
-        function editMovie(id) {
-            alert('编辑功能需要后端支持，当前仅作为演示');
-        }
-
-        // 删除电影
-        function deleteMovie(id) {
-            if (confirm('确定要删除这部电影吗？')) {
-                fetch(`./movies?movie_id=${id}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    if (data.status === 'success') {
-                        loadMovies(); // 重新加载电影列表
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('删除电影时发生错误');
-                });
-            }
-        }
-    </script>
-</body>
+        <br>
+        <form action="./searchMovie" method="get">
+            <input type="text" name="content"> &nbsp;&nbsp;&nbsp; <input type="submit" value="查询">
+        </form>
+        %s
+        </center>
+    </body>
 </html>

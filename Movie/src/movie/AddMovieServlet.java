@@ -1,5 +1,6 @@
 package movie;
 
+import repo.DatabaseService;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -7,13 +8,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.fileupload2.core.DiskFileItem;
 import org.apache.commons.fileupload2.core.DiskFileItemFactory;
 import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.commons.fileupload2.jakarta.servlet5.JakartaServletDiskFileUpload;
 import org.apache.commons.fileupload2.jakarta.servlet5.JakartaServletFileUpload;
-
-import repo.DatabaseService;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +22,9 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.Year; // Import Year for validation
 import java.util.List;
 
 @WebServlet(urlPatterns = "/addMovie")
@@ -37,12 +38,13 @@ public class AddMovieServlet extends HttpServlet {
     private static final int MAX_FILE_SIZE      = 1024 * 1024 * 40; // 40MB
     private static final int MAX_REQUEST_SIZE   = 1024 * 1024 * 50; // 50MB
 
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+//    public void init(ServletConfig config) throws ServletException {
+//        super.init(config);
+//
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//    }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    }
-
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 检测是否为多媒体上传
         if (!JakartaServletFileUpload.isMultipartContent(request)) {
@@ -78,107 +80,135 @@ public class AddMovieServlet extends HttpServlet {
             }
 
             // 解析请求的内容提取文件数据
-            String movieTitle = null, releaseYear = null, region = null, 
-                   language = null, genre = null, plotSummary = null, averageRating = null;
-            String posterFileName = null;
+            String movieTitle = null, releaseYearStr = null, region = null,
+                    language = null, genre = null, plotSummary = null, averageRatingStr = null, picture = null;
 
             List<DiskFileItem> items = upload.parseRequest(request);
             for (FileItem item : items) {
                 if (item.isFormField()) {
                     String fieldName = item.getFieldName();
-                    if (fieldName.equals("movie_title")) {
+                    if (fieldName.equals("movieTitle")) {
                         movieTitle = item.getString();
-                    } else if(fieldName.equals("release_year")) {
-                        releaseYear = item.getString();
+                    } else if(fieldName.equals("releaseYear")) {
+                        releaseYearStr = item.getString(); // Get raw string input
                     } else if(fieldName.equals("region")) {
                         region = item.getString();
                     } else if(fieldName.equals("language")) {
                         language = item.getString();
                     } else if(fieldName.equals("genre")) {
                         genre = item.getString();
-                    } else if(fieldName.equals("plot_summary")) {
+                    } else if(fieldName.equals("plotSummary")) {
                         plotSummary = item.getString();
-                    } else if(fieldName.equals("average_rating")) {
-                        averageRating = item.getString();
+                    } else if(fieldName.equals("averageRating")) {
+                         averageRatingStr = String.valueOf(Double.parseDouble(item.getString())); // Parse Average Rating
                     }
-                } else if (item.getFieldName().equals("poster_file")) {
-                    // 上传海报文件
-                    String fileName = item.getName();
-                    if(fileName != null && !fileName.isEmpty()) {
-                        // 获取文件名，处理可能包含路径的情况
-                        fileName = new File(fileName).getName();
-                        // 确保只接受图片文件
-                        String contentType = item.getContentType();
-                        if(contentType != null && (contentType.toLowerCase().startsWith("image/"))) {
-                            // 生成唯一文件名以避免冲突
-                            String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-                            Path filePath = Paths.get(uploadPath, uniqueFileName);
-                            System.out.println("Saving file to: " + filePath);
-                            item.write(filePath); // 保存文件到硬盘
-                            posterFileName = uniqueFileName;
-                        } else {
-                            System.out.println("File is not an image: " + contentType);
-                        }
+                } else {
+                    String fieldName = item.getFieldName();
+                    if("picture".equals(fieldName) && item.getName() != null && !item.getName().isEmpty()) {
+                        String fileName = new File(item.getName()).getName();
+                        Path filePath = Path.of(uploadPath, fileName);
+                        System.out.println(filePath);
+                        item.write(filePath); // 保存文件到硬盘
+                        picture = fileName;
                     }
                 }
             }
-            
-            this.saveMovieToDb(request, movieTitle, releaseYear, region, language, 
-                                genre, plotSummary, averageRating, posterFileName);
+
+            // *** MODIFY THIS SECTION: Parse releaseYearStr as Date (YYYY-MM-DD) ***
+            java.sql.Date releaseYearSqlDate = null; // Initialize with null
+            if (releaseYearStr != null && !releaseYearStr.trim().isEmpty()) {
+                 try {
+                     // Parse the YYYY-MM-DD string into a java.sql.Date
+                     releaseYearSqlDate = java.sql.Date.valueOf(releaseYearStr.trim());
+                     // Optional: Add date range check if needed
+                     // java.time.LocalDate inputDate = releaseYearSqlDate.toLocalDate();
+                     // java.time.LocalDate minDate = java.time.LocalDate.of(1800, 1, 1);
+                     // java.time.LocalDate maxDate = java.time.LocalDate.now().plusYears(5);
+                     // if (inputDate.isBefore(minDate) || inputDate.isAfter(maxDate)) {
+                     //     request.setAttribute("errorMessage", "发布日期应在 1800-01-01 到 " + maxDate + " 之间。");
+                     //     request.getRequestDispatcher("/add_movie.html").forward(request, response);
+                     //     return; // Terminate doPost execution
+                     // }
+                 } catch (IllegalArgumentException e) {
+                     // If parsing fails (e.g., invalid format like "abc"), catch IllegalArgumentException
+                      request.setAttribute("errorMessage", "发布日期格式不正确 (应为 YYYY-MM-DD 格式)。");
+                      request.getRequestDispatcher("/add_movie.html").forward(request, response);
+                      return; // Terminate doPost execution
+                 }
+            }
+            // At this point, releaseYearSqlDate is either a valid java.sql.Date or null.
+
+            // --- Add movieTitle validation here ---
+            if (movieTitle == null || movieTitle.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "电影标题不能为空。");
+                request.getRequestDispatcher("/add_movie.html").forward(request, response);
+                return; // Terminate doPost execution
+            }
+            // --- movieTitle validation end ---
+
+            this.saveMovieToDb(request, movieTitle, releaseYearSqlDate, region, language, // Pass java.sql.Date object
+                                genre, plotSummary, averageRatingStr, picture);
         } catch (Exception ex) {
             throw new ServletException(ex);
         }
 
         response.sendRedirect("./movies");
     }
-    
-    private void saveMovieToDb(HttpServletRequest request, String movieTitle, String releaseYear,
+
+    // Modified signature to accept java.sql.Date for releaseYear
+    private void saveMovieToDb(HttpServletRequest request, String movieTitle, java.sql.Date releaseYearSqlDate, // Changed type to java.sql.Date
                                 String region, String language, String genre, String plotSummary,
-                                String averageRating, String posterFileName) throws SQLException {
-        ServletContext context = request.getServletContext();
-        DatabaseService service = (DatabaseService)context.getAttribute(DatabaseService.CONTEXT_KEY);
+                                String averageRatingStr, String picture) throws SQLException { // Renamed param to averageRatingStr
+        ServletContext context = this.getServletContext();
+        DatabaseService dbService = (DatabaseService)context.getAttribute(DatabaseService.CONTEXT_KEY);
+        BasicDataSource dataSource = dbService.getDataSource();
 
-        // 转义单引号，防止 SQL 注入和语法错误
-        movieTitle = escapeSqlString(movieTitle);
-        region = escapeSqlString(region);
-        language = escapeSqlString(language);
-        genre = escapeSqlString(genre);
-        plotSummary = escapeSqlString(plotSummary);
-
-        // 构建插入SQL语句
-        String pictureValue = "";
-        if (posterFileName != null && !posterFileName.isEmpty()) {
-            pictureValue = "upload/" + escapeSqlString(posterFileName);
+        // 限制 plotSummary 字段长度，防止超出数据库字段限制
+        if (plotSummary != null && plotSummary.length() > 100) {
+            plotSummary = plotSummary.substring(0, 100);
         }
 
-        // 修正NULL值的处理方式，确保整数和浮点数类型的字段正确处理
-        String releaseYearValue = (releaseYear != null && !releaseYear.isEmpty()) ? releaseYear : "NULL";
-        String averageRatingValue = (averageRating != null && !averageRating.isEmpty()) ? averageRating : "NULL";
+        // Use PreparedStatement
+        String insertSql = "INSERT INTO movies (movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        String insertSql = String.format(
-            "INSERT INTO movies (movie_title, release_year, region, language, genre, plot_summary, average_rating, picture) VALUES ('%s', %s, '%s', '%s', '%s', '%s', %s, '%s')",
-            movieTitle,
-            releaseYearValue, region, language, genre, plotSummary,
-            averageRatingValue, pictureValue
-        );
+        // Get connection and prepare statement
+        try (var connection = dataSource.getConnection();
+             var statement = connection.prepareStatement(insertSql)) {
 
-        // 将字符串"NULL"替换为真正的NULL值，但要小心不要影响其他可能含有"NULL"文本的部分
-        insertSql = insertSql.replace(", 'NULL',", ", NULL,")
-                             .replace(", 'NULL' ", ", NULL ")
-                             .replace(", 'NULL'", ", NULL")
-                             .replace(" 'NULL')", " NULL)")
-                             .replace("'NULL')", "NULL)");
+            statement.setString(1, movieTitle);
+            // Handle releaseYearSqlDate (java.sql.Date)
+            if (releaseYearSqlDate != null) {
+                // If database column is DATE, use setDate
+                statement.setDate(2, releaseYearSqlDate);
+            } else {
+                // Use setNull if the value is null
+                statement.setNull(2, java.sql.Types.DATE); // Use Types.DATE if column is DATE
+            }
+            statement.setString(3, region);
+            statement.setString(4, language);
+            statement.setString(5, genre);
+            statement.setString(6, plotSummary);
+            // Handle averageRatingStr -> Double -> setDouble
+            if (averageRatingStr != null && !averageRatingStr.isEmpty()) {
+                 try {
+                     double avgRating = Double.parseDouble(averageRatingStr);
+                     statement.setDouble(7, avgRating);
+                 } catch (NumberFormatException e) {
+                      // This should ideally have been caught earlier, but handle just in case
+                      statement.setNull(7, java.sql.Types.DOUBLE);
+                 }
+            } else {
+                 statement.setNull(7, java.sql.Types.DOUBLE);
+            }
+            statement.setString(8, picture);
 
-        System.out.println("Insert SQL: " + insertSql); // Debugging line
-
-        service.update(insertSql);
-    }
-    
-    // 转义 SQL 字符串中的单引号
-    private String escapeSqlString(String str) {
-        if (str == null) {
-            return "NULL";
+            statement.executeUpdate(); // Execute the prepared statement
+        } catch (SQLException e) {
+             throw e; // Re-throw the exception
         }
-        return str.replace("'", "''");  // 将单引号转义为两个单引号
+
+        // Original code using string formatting is removed as PreparedStatement is used now.
+        // dbService.execute(String.format(insertSql, movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture));
     }
+
 }

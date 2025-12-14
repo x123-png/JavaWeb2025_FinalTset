@@ -6,22 +6,20 @@ import java.util.Date;
 public class Movie {
     private int movieId;
     private String movieTitle;
-    private Integer releaseYear;
+    private Date releaseYear;
     private String region;
     private String language;
     private String genre;
     private String plotSummary;
-    private BigDecimal averageRating;
+    private Double averageRating;
     private String picture;
-    private Date createdAt;
-    private Date updatedAt;
 
     public Movie() {
     }
 
-    public Movie(int movieId, String movieTitle, Integer releaseYear, String region,
-                 String language, String genre, String plotSummary, BigDecimal averageRating,
-                 String picture, Date createdAt, Date updatedAt) {
+    public Movie(int movieId, String movieTitle, Date releaseYear, String region,
+                 String language, String genre, String plotSummary, Double averageRating,
+                 String picture) {
         this.movieId = movieId;
         this.movieTitle = movieTitle;
         this.releaseYear = releaseYear;
@@ -31,8 +29,6 @@ public class Movie {
         this.plotSummary = plotSummary;
         this.averageRating = averageRating;
         this.picture = picture;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     // Getters and Setters
@@ -52,11 +48,11 @@ public class Movie {
         this.movieTitle = movieTitle;
     }
 
-    public Integer getReleaseYear() {
+    public Date getReleaseYear() {
         return releaseYear;
     }
 
-    public void setReleaseYear(Integer releaseYear) {
+    public void setReleaseYear(Date releaseYear) {
         this.releaseYear = releaseYear;
     }
 
@@ -92,11 +88,11 @@ public class Movie {
         this.plotSummary = plotSummary;
     }
 
-    public BigDecimal getAverageRating() {
+    public Double getAverageRating() {
         return averageRating;
     }
 
-    public void setAverageRating(BigDecimal averageRating) {
+    public void setAverageRating(Double averageRating) {
         this.averageRating = averageRating;
     }
 
@@ -107,22 +103,6 @@ public class Movie {
 
     public void setPicture(String picture) {
         this.picture = picture;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -137,8 +117,6 @@ public class Movie {
                 ", plotSummary='" + plotSummary + '\'' +
                 ", averageRating=" + averageRating +
                 ", picture='" + picture + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

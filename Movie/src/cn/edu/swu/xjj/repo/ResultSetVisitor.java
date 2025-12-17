@@ -1,4 +1,4 @@
-package repo;
+package cn.edu.swu.xjj.repo;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

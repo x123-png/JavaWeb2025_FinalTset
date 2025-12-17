@@ -1,8 +1,7 @@
-package repo;
+package cn.edu.swu.xjj.repo;
 
-import movie.Movie;
+import cn.edu.swu.xjj.movie.Movie;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

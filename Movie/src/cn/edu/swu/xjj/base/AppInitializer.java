@@ -1,10 +1,10 @@
-package base;
+package cn.edu.swu.xjj.base;
 
+import cn.edu.swu.xjj.repo.DatabaseService;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
-import repo.DatabaseService;
 
 @WebListener
 public class AppInitializer implements ServletContextListener {

@@ -3,52 +3,50 @@
 <head>
     <meta charset="utf-8">
     <title>添加电影</title>
+    <link rel="stylesheet" href="./css/movie.css" />
 </head>
 <body>
-<center>
-    <br><h1>欢迎访问剧光</h1><br>
-    <form action="./addMovie" method="post" enctype="multipart/form-data">
-        <table>
-            <tr>
-                <td>电影标题：</td>
-                <td><input type="text" name="movieTitle" required></td>
-            </tr>
-            <tr>
-                <td>发行年份：</td>
-                <td><input type="text" name="releaseYear" required></td>
-            </tr>
-            <tr>
-                <td>地区：</td>
-                <td><input type="text" name="region" required></td>
-            </tr>
-            <tr>
-                <td>语言：</td>
-                <td><input type="text" name="language" required></td>
-            </tr>
-            <tr>
-                <td>类型：</td>
-                <td><input type="text" name="genre" required></td>
-            </tr>
-            <tr>
-                <td>剧情简介：</td>
-                <td><textarea rows="3" cols="22" name="plotSummary"></textarea></td>
-            </tr>
-            <tr>
-                <td>平均评分：</td>
-                <td><input type="text" name="averageRating" required></td>
-            </tr>
-            <tr>
-                <td>海报：</td>
-                <td><input type="file" name="picture"></td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center">
-                    <input type="submit" value="添加电影"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="./index.html">返回首页</a>
-                </td>
-            </tr>
-        </table>
-    </form>
-</center>
+    <div class="page-container">
+        <h1>添加电影</h1>
+        <form action="./addMovie" method="post" enctype="multipart/form-data">
+            <div class="form-row">
+                <label>电影标题：</label>
+                <input type="text" name="movieTitle" required>
+            </div>
+            <div class="form-row">
+                <label>发行年份：</label>
+                <input type="text" name="releaseYear" required>
+            </div>
+            <div class="form-row">
+                <label>地区：</label>
+                <input type="text" name="region" required>
+            </div>
+            <div class="form-row">
+                <label>语言：</label>
+                <input type="text" name="language" required>
+            </div>
+            <div class="form-row">
+                <label>类型：</label>
+                <input type="text" name="genre" required>
+            </div>
+            <div class="form-row">
+                <label>剧情简介：</label>
+                <textarea rows="3" name="plotSummary"></textarea>
+            </div>
+            <div class="form-row">
+                <label>豆瓣评分：</label>
+                <input type="text" name="averageRating" required>
+            </div>
+            <div class="form-row">
+                <label>海报：</label>
+                <input type="file" name="picture">
+            </div>
+            <div class="form-row" style="text-align: center;">
+                <input type="submit" value="添加电影">
+                <a href="./movies"><input type="button" value="返回电影列表"></a>
+                <a href="./index.html"><input type="button" value="返回首页"></a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

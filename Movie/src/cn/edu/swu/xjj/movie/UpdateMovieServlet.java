@@ -1,5 +1,8 @@
-package movie;
+package cn.edu.swu.xjj.movie;
 
+import cn.edu.swu.xjj.repo.DatabaseService;
+import cn.edu.swu.xjj.repo.MovieResultSetVisitor;
+import cn.edu.swu.xjj.utils.HtmlHelper;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,15 +15,10 @@ import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.commons.fileupload2.jakarta.servlet5.JakartaServletDiskFileUpload;
 import org.apache.commons.fileupload2.jakarta.servlet5.JakartaServletFileUpload;
 
-import repo.DatabaseService;
-import repo.MovieResultSetVisitor;
-import utils.HtmlHelper;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -38,11 +36,11 @@ public class UpdateMovieServlet extends HttpServlet {
     private static final int MAX_REQUEST_SIZE   = 1024 * 1024 * 50; // 50MB
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String id = request.getParameter("id");
+        String id = request.getParameter("movieId");
 
         ServletContext context = this.getServletContext();
         DatabaseService dbService = (DatabaseService)context.getAttribute(DatabaseService.CONTEXT_KEY);
-        String selectSQL = String.format("select * from movies where movie_id = %s", id);
+        String selectSQL = String.format("select * from movies where movieId = %s", id);
 
         try {
             List<Movie> movies = dbService.query(selectSQL, new MovieResultSetVisitor());
@@ -60,6 +58,8 @@ public class UpdateMovieServlet extends HttpServlet {
         海报图片：<input type="file" name="picture"><br>
         (当前海报: %s)<br><br>
         <input type="submit" value="修改电影">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="./movies"><input type="button" value="返回电影列表"></a>
     </form>
         """;
             response.setContentType("text/html");
@@ -190,14 +190,14 @@ public class UpdateMovieServlet extends HttpServlet {
             service.execute(String.format(updateSQL, movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture, movieId));
         } else {
             // 验证 id 是有效的数字
-            int Id;
+            int id;
             try {
-                Id = Integer.parseInt(movieId);
+                id = Integer.parseInt(movieId);
             } catch (NumberFormatException e) {
                 throw new SQLException("无效的电影ID: " + movieId);
             }
             updateSQL = "UPDATE movies SET movieTitle='%s', releaseYear='%s', region='%s', language='%s', genre='%s', plotSummary='%s', averageRating=%s WHERE movieId=%s";
-            service.execute(String.format(updateSQL, movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, movieId));
+            service.execute(String.format(updateSQL, movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, id));
         }
     }
 

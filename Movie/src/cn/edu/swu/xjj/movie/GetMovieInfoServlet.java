@@ -1,5 +1,7 @@
-package movie;
+package cn.edu.swu.xjj.movie;
 
+import cn.edu.swu.xjj.repo.DatabaseService;
+import cn.edu.swu.xjj.repo.MovieResultSetVisitor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -7,15 +9,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import repo.DatabaseService;
-import repo.MovieResultSetVisitor;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
 
 @WebServlet("/getMovieInfo")
 public class GetMovieInfoServlet extends HttpServlet {

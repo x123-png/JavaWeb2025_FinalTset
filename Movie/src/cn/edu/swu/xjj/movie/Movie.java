@@ -1,6 +1,5 @@
-package movie;
+package cn.edu.swu.xjj.movie;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class Movie {
@@ -11,14 +10,14 @@ public class Movie {
     private String language;
     private String genre;
     private String plotSummary;
-    private Double averageRating;
+    private double averageRating;
     private String picture;
 
     public Movie() {
     }
 
     public Movie(int movieId, String movieTitle, Date releaseYear, String region,
-                 String language, String genre, String plotSummary, Double averageRating,
+                 String language, String genre, String plotSummary, double averageRating,
                  String picture) {
         this.movieId = movieId;
         this.movieTitle = movieTitle;

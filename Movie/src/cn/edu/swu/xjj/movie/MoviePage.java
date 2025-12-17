@@ -1,4 +1,4 @@
-package movie;
+package cn.edu.swu.xjj.movie;
 
 import java.util.List;
 

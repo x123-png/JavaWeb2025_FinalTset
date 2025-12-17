@@ -1,5 +1,8 @@
-package movie;
+package cn.edu.swu.xjj.movie;
 
+import cn.edu.swu.xjj.repo.DatabaseService;
+import cn.edu.swu.xjj.repo.MovieResultSetVisitor;
+import cn.edu.swu.xjj.repo.ResultSetVisitor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
@@ -9,19 +12,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import repo.DatabaseService;
-import repo.MovieResultSetVisitor;
-import repo.ResultSetVisitor;
-
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-@WebServlet(urlPatterns = "/movies")
+@WebServlet(urlPatterns = "/moviesService")
 public class MovieService extends HttpServlet {
     public final static int DEFAULT_PAGE_SIZE = 5;
     public final static int DEFAULT_PAGE = 1;

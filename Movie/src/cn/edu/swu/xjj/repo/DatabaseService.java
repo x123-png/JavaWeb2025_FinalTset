@@ -1,4 +1,4 @@
-package repo;
+package cn.edu.swu.xjj.repo;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -67,18 +67,6 @@ public class DatabaseService {
                 return statement.execute(sql);
             }
         }
-    }
-
-    public int update(String sql) throws SQLException {
-        try(Connection connection = this.dataSource.getConnection()) {
-            try(Statement statement = connection.createStatement()) {
-                return statement.executeUpdate(sql);
-            }
-        }
-    }
-
-    public BasicDataSource getDataSource() {
-        return this.dataSource;
     }
 
 }

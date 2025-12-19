@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(urlPatterns = "/deleteMovie")
+@WebServlet(urlPatterns = "/x123-png/deleteMovie")
 public class DeleteMovie extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("movieId");

@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(urlPatterns = "/updateMovie")
+@WebServlet(urlPatterns = "/x123-png/updateMovie")
 public class UpdateMovieServlet extends HttpServlet {
 
     // 上传文件存储目录
@@ -164,8 +164,8 @@ public class UpdateMovieServlet extends HttpServlet {
         DatabaseService service = (DatabaseService)context.getAttribute(DatabaseService.CONTEXT_KEY);
 
         //限制plotSummary长度
-        if (plotSummary != null && plotSummary.length() > 100) {
-            plotSummary = plotSummary.substring(0, 100);
+        if (plotSummary != null && plotSummary.length() > 400) {
+            plotSummary = plotSummary.substring(0, 400);
         }
 
         // 转义单引号，防止 SQL 注入和语法错误

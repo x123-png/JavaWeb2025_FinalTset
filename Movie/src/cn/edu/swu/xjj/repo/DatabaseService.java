@@ -25,7 +25,7 @@ public class DatabaseService {
     public void init() {
         dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/movie_list");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/movie_list?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");
         dataSource.setUsername("root");
         dataSource.setPassword("51211mysql@");
 
@@ -35,6 +35,9 @@ public class DatabaseService {
         dataSource.setMaxIdle(4);              // 最大空闲连接数
         dataSource.setMinIdle(2);               // 最小空闲连接数
         dataSource.setMaxWaitMillis(10000);     // 获取连接最大等待时间（毫秒）
+
+        //执行脚本部分
+        initDatabase();
     }
 
     private Connection getConnection() throws SQLException {
@@ -67,6 +70,51 @@ public class DatabaseService {
                 return statement.execute(sql);
             }
         }
+    }
+
+    //脚本部分
+    private void initDatabase() {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            String sql = loadSqlFromClasspath("db_init.sql");
+
+            for (String s : sql.split(";")) {
+                String execSql = s.trim();
+                if (!execSql.isEmpty()) {
+                    System.out.println("执行 SQL: " + execSql);
+                    stmt.execute(execSql);
+                }
+            }
+
+            System.out.println("db_init.sql 执行完成");
+
+        } catch (Exception e) {
+            throw new RuntimeException("数据库初始化失败", e);
+        }
+    }
+
+    private String loadSqlFromClasspath(String fileName) throws Exception {
+        StringBuilder sb = new StringBuilder();
+
+        try (var in = getClass().getClassLoader().getResourceAsStream(fileName);
+             var reader = new java.io.BufferedReader(new java.io.InputStreamReader(in))) {
+
+            if (in == null) {
+                throw new RuntimeException("找不到 " + fileName);
+            }
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("--")) {
+                    continue;
+                }
+                sb.append(line).append("\n");
+            }
+        }
+
+        return sb.toString();
     }
 
 }

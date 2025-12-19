@@ -11,7 +11,7 @@ public class HtmlHelper {
     <head>
         <meta charset="utf-8">
         <title>剧光</title>
-        <link rel="stylesheet" href="css/movie.css" />
+        <link rel="stylesheet" href="../css/movie.css" />
     </head>
 <body>
     <center>
@@ -20,10 +20,10 @@ public class HtmlHelper {
             <div class="nav-links">
                 <a href="./add_movie.html"> 添加电影 </a>
                 <a href="./movies"> 显示列表 </a>
-                <a href="./logout"> 退出系统 </a>
+                <a href="../x123-png/logout"> 退出系统 </a>
             </div>
             <div class="search-form">
-                <form action="./searchMovie" method="get">
+                <form action="../searchMovie" method="get">
                     <input type="text" name="content" placeholder="输入搜索内容"> <input type="submit" value="查询">
                 </form>
             </div>

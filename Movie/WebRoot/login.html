@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>登录剧光</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .login-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .login-header h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 2.4em;
+            position: relative;
+            padding: 15px 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            text-align: center;
+            color: #7f8c8d;
+            margin-top: 0;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background-color: #fff;
+        }
+
+        .form-group input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .captcha-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .captcha-container input[type="text"] {
+            flex: 1;
+        }
+
+        .captcha-img {
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .refresh-btn {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #2980b9;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1c6ea4);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        #error-message {
+            margin: 15px 0;
+            padding: 12px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-header">
+        <h1>欢迎访问剧光</h1>
+        <p>请登录您的账户</p>
+    </div>
+
+    <form action="./login" method="post">
+        <div class="form-group">
+            <label for="user">用户名</label>
+            <input type="text" name="user" id="user" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="code">验证码</label>
+            <div class="captcha-container">
+                <input type="text" name="code" id="code" required placeholder="请输入验证码">
+                <img id="captcha-img" class="captcha-img" src="./captcha" alt="验证码" onclick="refreshCaptcha()" title="点击刷新验证码" />
+                <button type="button" class="refresh-btn" onclick="refreshCaptcha()">刷新</button>
+            </div>
+        </div>
+
+        <input type="submit" value="登录系统" class="submit-btn">
+
+        <div id="error-message"></div>
+    </form>
+
+    <a href="index.html" class="back-link">返回首页</a>
+</div>
+
+<script>
+    // 从URL参数中提取错误信息并在页面上显示
+    function displayError() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+
+        if (error) {
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.textContent = decodeURIComponent(error);
+            errorMessageDiv.style.display = 'block';
+        }
+    }
+
+    // 刷新验证码图片
+    function refreshCaptcha() {
+        const captchaImg = document.getElementById('captcha-img');
+        // 添加时间戳以防止浏览器缓存
+        captchaImg.src = './captcha?' + Date.now();
+    }
+
+    // 页面加载时显示错误信息
+    window.onload = function() {
+        displayError();
+    };
+</script>
+</body>
+</html>

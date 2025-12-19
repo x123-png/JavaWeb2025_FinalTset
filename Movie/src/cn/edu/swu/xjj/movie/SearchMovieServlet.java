@@ -15,7 +15,7 @@ import java.io.Writer;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(urlPatterns = "/searchMovie")
+@WebServlet(urlPatterns = "/x123-png/searchMovie")
 public class SearchMovieServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         String content = request.getParameter("content");

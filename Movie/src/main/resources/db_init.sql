@@ -4,6 +4,15 @@ CREATE DATABASE IF NOT EXISTS movie_list
 
 USE movie_list;
 
+CREATE TABLE IF NOT EXISTS user (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'user',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS db_init_flag (
     id INT PRIMARY KEY,
     initialized BOOLEAN NOT NULL DEFAULT FALSE
@@ -25,6 +34,10 @@ CREATE TABLE IF NOT EXISTS movies (
     PRIMARY KEY (movieId)
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4;
+
+-- Insert default admin user if not exists
+INSERT IGNORE INTO user (name, password, role)
+VALUES ('admin', MD5('admin123'), 'admin');
 
 INSERT INTO movies
 (movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture)
@@ -49,7 +62,7 @@ INSERT INTO movies
 SELECT
     '盗梦空间', '2010-07-16', '美国', '英语', '科幻/悬疑',
     '盗梦者柯布率领团队潜入多层梦境执行植入任务，在时间错位与心理迷宫中挣扎，试图完成使命并重返真实生活。',
-    9.3, 'Inception.jpg'
+    9.3, 'OIP.webp'
 FROM dual
 WHERE (SELECT initialized FROM db_init_flag WHERE id = 1) = FALSE;
 

@@ -2,18 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>登录映界</title>
+    <title>用户注册 - 映界</title>
+    <link rel="stylesheet" href="./css/movie.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .login-container {
+        .register-container {
             max-width: 500px;
             margin: 50px auto;
             padding: 40px;
@@ -23,7 +15,7 @@
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        .login-header h1 {
+        .register-header h1 {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 10px;
@@ -34,13 +26,13 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
             letter-spacing: 1px;
             font-family: 'Georgia', serif;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .login-header p {
+        .register-header p {
             text-align: center;
             color: #7f8c8d;
             margin-top: 0;
@@ -72,46 +64,17 @@
         }
 
         .form-group input:focus {
-            border-color: #3498db;
+            border-color: #27ae60;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
             transform: translateY(-2px);
-        }
-
-        .captcha-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .captcha-container input[type="text"] {
-            flex: 1;
-        }
-
-        .captcha-img {
-            height: 40px;
-            cursor: pointer;
-        }
-
-        .refresh-btn {
-            padding: 10px 15px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .refresh-btn:hover {
-            background: #2980b9;
         }
 
         .submit-btn {
             display: block;
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white;
             border: none;
             border-radius: 30px;
@@ -120,13 +83,13 @@
             font-weight: 600;
             transition: all 0.3s ease;
             margin-top: 10px;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
         }
 
         .submit-btn:hover {
-            background: linear-gradient(135deg, #2980b9, #1c6ea4);
+            background: linear-gradient(135deg, #2ecc71, #219653);
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
         }
 
         #error-message {
@@ -140,11 +103,22 @@
             display: none;
         }
 
+        #success-message {
+            margin: 15px 0;
+            padding: 12px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
         .back-link {
             display: block;
             text-align: center;
             margin-top: 20px;
-            color: #3498db;
+            color: #27ae60;
             text-decoration: none;
             font-weight: 600;
         }
@@ -155,16 +129,16 @@
     </style>
 </head>
 <body>
-<div class="login-container">
-    <div class="login-header">
-        <h1>欢迎访问映界</h1>
-        <p>请登录您的账户</p>
+<div class="register-container">
+    <div class="register-header">
+        <h1>创建账户</h1>
+        <p>填写以下信息注册新账户</p>
     </div>
 
-    <form action="./login" method="post">
+    <form id="registrationForm" action="./register" method="post">
         <div class="form-group">
-            <label for="user">用户名</label>
-            <input type="text" name="user" id="user" required>
+            <label for="username">用户名</label>
+            <input type="text" name="username" id="username" required>
         </div>
 
         <div class="form-group">
@@ -173,45 +147,80 @@
         </div>
 
         <div class="form-group">
-            <label for="code">验证码</label>
-            <div class="captcha-container">
-                <input type="text" name="code" id="code" required placeholder="请输入验证码">
-                <img id="captcha-img" class="captcha-img" src="./captcha" alt="验证码" onclick="refreshCaptcha()" title="点击刷新验证码" />
-                <button type="button" class="refresh-btn" onclick="refreshCaptcha()">刷新</button>
-            </div>
+            <label for="confirmPassword">确认密码</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" required>
         </div>
 
-        <input type="submit" value="登录系统" class="submit-btn">
+        <input type="submit" value="注册账户" class="submit-btn">
 
         <div id="error-message"></div>
+        <div id="success-message"></div>
     </form>
 
     <a href="index.html" class="back-link">返回首页</a>
+    <a href="login.html" class="back-link">已有账户？立即登录</a>
 </div>
 
 <script>
+    let isSubmitting = false; // 防止重复提交
+
     // 从URL参数中提取错误信息并在页面上显示
-    function displayError() {
+    function displayMessages() {
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get('error');
+        const success = urlParams.get('success');
 
         if (error) {
             const errorMessageDiv = document.getElementById('error-message');
             errorMessageDiv.textContent = decodeURIComponent(error);
             errorMessageDiv.style.display = 'block';
         }
+
+        if (success) {
+            const successMessageDiv = document.getElementById('success-message');
+            successMessageDiv.textContent = decodeURIComponent(success);
+            successMessageDiv.style.display = 'block';
+        }
     }
 
-    // 刷新验证码图片
-    function refreshCaptcha() {
-        const captchaImg = document.getElementById('captcha-img');
-        // 添加时间戳以防止浏览器缓存
-        captchaImg.src = './captcha?' + Date.now();
-    }
+    // 表单验证和提交处理
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        // 如果已经在提交中，阻止重复提交
+        if (isSubmitting) {
+            e.preventDefault();
+            return false;
+        }
+
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        // 检查密码是否至少包含四个字符
+        if (password.length < 4) {
+            e.preventDefault();
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.textContent = '密码至少需要包含四个字符';
+            errorMessageDiv.style.display = 'block';
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            const errorMessageDiv = document.getElementById('error-message');
+            errorMessageDiv.textContent = '两次输入的密码不一致，请重新输入';
+            errorMessageDiv.style.display = 'block';
+            return false;
+        }
+
+        // 设置提交标志，防止重复提交
+        isSubmitting = true;
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.value = '注册中...';
+    });
 
     // 页面加载时显示错误信息
     window.onload = function() {
-        displayError();
+        displayMessages();
     };
 </script>
 </body>

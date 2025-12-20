@@ -4,43 +4,77 @@ CREATE DATABASE IF NOT EXISTS movie_list
 
 USE movie_list;
 
-DROP TABLE IF EXISTS movies;
+CREATE TABLE IF NOT EXISTS user (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'user',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE movies (
+CREATE TABLE IF NOT EXISTS db_init_flag (
+    id INT PRIMARY KEY,
+    initialized BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+INSERT IGNORE INTO db_init_flag (id, initialized)
+VALUES (1, FALSE);
+
+CREATE TABLE IF NOT EXISTS movies (
     movieId INT NOT NULL AUTO_INCREMENT,
     movieTitle VARCHAR(255) NOT NULL,
     releaseYear DATE DEFAULT NULL,
     region VARCHAR(100) DEFAULT NULL,
     language VARCHAR(100) DEFAULT NULL,
     genre VARCHAR(100) DEFAULT NULL,
-    plotSummary CHAR(100) DEFAULT NULL,
+    plotSummary VARCHAR(400) DEFAULT NULL,
     averageRating DOUBLE DEFAULT NULL,
     picture VARCHAR(500) DEFAULT NULL,
     PRIMARY KEY (movieId)
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4;
 
+-- Insert default admin user if not exists
+INSERT IGNORE INTO user (name, password, role)
+VALUES ('admin', MD5('admin123'), 'admin');
+
 INSERT INTO movies
 (movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture)
-VALUES
-('肖申克的救赎', '1994-09-23', '美国', '英语', '剧情',
- '讲述了银行家安迪被冤入狱，在肖申克监狱漫长的监禁中，他凭借智慧与坚韧默默谋划，最终通过一条秘密挖凿的隧道成功越狱，重获自由与正义的故事', 9.7,
- '/upload/肖申克的救赎.webp'),
+SELECT
+    '肖申克的救赎', '1994-09-23', '美国', '英语', '剧情',
+    '银行家安迪被冤入狱，在肖申克监狱中忍受多年压迫与不公，凭借智慧、隐忍与希望，暗中策划逃离牢笼，最终重获自由。',
+    9.7, 'Shawshank.webp'
+FROM dual
+WHERE (SELECT initialized FROM db_init_flag WHERE id = 1) = FALSE;
 
-('霸王别姬', '1993-01-01', '中国', '中文', '剧情/爱情/同性',
- '一对京剧艺人程蝶衣和段小楼跨越半个世纪的悲欢离合，展现了他们在时代洪流中从相知、相依到最终走向悲剧结局的命运。影片通过个人情感与历史变迁的交织，深刻探讨了艺术、爱情、背叛与身份认同等主题。', 9.6,
- '/upload/霸王别姬.webp'),
+INSERT INTO movies
+(movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture)
+SELECT
+    '霸王别姬', '1993-01-01', '中国', '中文', '剧情/爱情',
+    '京剧艺人程蝶衣与段小楼相伴半生，在时代动荡与情感纠葛中，从相知相守到分离决裂，映射个人命运与历史洪流的悲剧。',
+    9.6, 'Farewell.webp'
+FROM dual
+WHERE (SELECT initialized FROM db_init_flag WHERE id = 1) = FALSE;
 
-('公民凯恩', '1941-09-05', '美国', '英语', '剧情/悬疑/传记',
- '记者调查报业大亨凯恩一生，揭开“玫瑰花蕾”之谜，展现财富与人性的异化。', 9.5,
- '/upload/公民凯恩.jpg'),
+INSERT INTO movies
+(movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture)
+SELECT
+    '盗梦空间', '2010-07-16', '美国', '英语', '科幻/悬疑',
+    '盗梦者柯布率领团队潜入多层梦境执行植入任务，在时间错位与心理迷宫中挣扎，试图完成使命并重返真实生活。',
+    9.3, 'OIP.webp'
+FROM dual
+WHERE (SELECT initialized FROM db_init_flag WHERE id = 1) = FALSE;
 
-('盗梦空间', '2010-07-16', '美国', '英语', '科幻/悬疑',
- '盗梦者柯布为归家，率领团队潜入多层梦境植入意念，在现实与梦境的边界挣扎，探讨记忆、执念与真实，以开放式陀螺结局引发虚实之思。', 9.3,
- '/upload/盗梦空间.jpg'),
+INSERT INTO movies
+(movieTitle, releaseYear, region, language, genre, plotSummary, averageRating, picture)
+SELECT
+    '千与千寻', '2001-07-20', '日本', '日语', '动画/奇幻',
+    '少女千寻误入神灵世界，为拯救被变成猪的父母进入汤屋工作，在历练中成长，最终守住善良与勇气找回自我。',
+    9.4, 'SpiritedAway.webp'
+FROM dual
+WHERE (SELECT initialized FROM db_init_flag WHERE id = 1) = FALSE;
 
-('千与千寻', '2001-07-20', '日本', '日语', '动画/奇幻',
- '少女千寻在神秘世界为救父母，进入汤屋工作，经历成长考验，最终保持本心解救家人、帮助朋友，揭示贪欲之害与纯真力量。', 9.4,
- '/upload/千与千寻.webp');
-
-SELECT 'movies table initialized successfully.' AS message;
+UPDATE db_init_flag
+SET initialized = TRUE
+WHERE id = 1 AND initialized = FALSE;

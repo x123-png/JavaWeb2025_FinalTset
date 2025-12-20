@@ -10,20 +10,20 @@ public class HtmlHelper {
 <html>
     <head>
         <meta charset="utf-8">
-        <title>剧光</title>
+        <title>映界</title>
         <link rel="stylesheet" href="../css/movie.css" />
     </head>
 <body>
     <center>
         <div class="page-container">
-            <h1>欢迎访问剧光</h1>
+            <h1>欢迎访问映界</h1>
             <div class="nav-links">
                 <a href="./add_movie.html"> 添加电影 </a>
                 <a href="./movies"> 显示列表 </a>
                 <a href="../x123-png/logout"> 退出系统 </a>
             </div>
             <div class="search-form">
-                <form action="../searchMovie" method="get">
+                <form action="./searchMovie" method="get">
                     <input type="text" name="content" placeholder="输入搜索内容"> <input type="submit" value="查询">
                 </form>
             </div>
@@ -59,7 +59,7 @@ public class HtmlHelper {
         int seqNum = 1;
         for (Movie m : movies) {
             String pictureDisplay = m.getPicture() != null ?
-                    "<img src='upload/" + m.getPicture() + "' width='50' height='50' />"  : "无图片";
+                    "<img src='../upload/" + m.getPicture() + "' width='50' height='50' />"  : "无图片";
             sb.append(String.format(template,
                     seqNum, m.getMovieTitle(), m.getReleaseYear(), m.getRegion(), m.getLanguage(), m.getGenre(), m.getPlotSummary(), m.getAverageRating(),
                     pictureDisplay, m.getMovieId(), m.getMovieId()

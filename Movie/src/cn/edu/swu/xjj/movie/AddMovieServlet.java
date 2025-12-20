@@ -60,9 +60,8 @@ public class AddMovieServlet extends HttpServlet {
             // 设置最大请求值 (包含文件和表单数据)
             upload.setSizeMax(MAX_REQUEST_SIZE);
 
-            // 构造临时路径来存储上传的文件
-            // 这个路径相对当前应用的目录
-            String uploadPath = Paths.get(request.getServletContext().getRealPath("./"), UPLOAD_DIRECTORY).toString();
+            // 构造上传路径，使用相对路径 "upload" 存储到应用根目录
+            String uploadPath = request.getServletContext().getRealPath("/") + UPLOAD_DIRECTORY;
             System.out.println(uploadPath);
             // 如果目录不存在则创建
             File uploadDir = new File(uploadPath);

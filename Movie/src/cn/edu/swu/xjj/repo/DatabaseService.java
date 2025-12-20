@@ -77,6 +77,13 @@ public class DatabaseService {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
 
+            // 检查初始化标志，如果已经初始化过则跳过
+            boolean isInitialized = checkInitialization(stmt);
+            if (isInitialized) {
+                System.out.println("数据库已初始化，跳过初始化脚本执行");
+                return;
+            }
+
             String sql = loadSqlFromClasspath("db_init.sql");
 
             for (String s : sql.split(";")) {
@@ -92,6 +99,26 @@ public class DatabaseService {
         } catch (Exception e) {
             throw new RuntimeException("数据库初始化失败", e);
         }
+    }
+
+    private boolean checkInitialization(Statement stmt) {
+        try {
+            // 检查 db_init_flag 表是否存在
+            String checkTableSql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'movie_list' AND table_name = 'db_init_flag'";
+            ResultSet rs = stmt.executeQuery(checkTableSql);
+            if (rs.next() && rs.getInt(1) > 0) {
+                // 表存在，检查初始化状态
+                String checkInitSql = "SELECT initialized FROM db_init_flag WHERE id = 1 LIMIT 1";
+                rs = stmt.executeQuery(checkInitSql);
+                if (rs.next()) {
+                    return rs.getBoolean("initialized");
+                }
+            }
+        } catch (SQLException e) {
+            // 如果出现异常（如表不存在），则认为未初始化
+            System.out.println("检查初始化状态时出现异常，将执行初始化: " + e.getMessage());
+        }
+        return false; // 默认认为未初始化
     }
 
     private String loadSqlFromClasspath(String fileName) throws Exception {

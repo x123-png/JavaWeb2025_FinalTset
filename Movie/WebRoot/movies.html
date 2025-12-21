@@ -21,24 +21,131 @@
                     <input type="text" name="content" placeholder="输入搜索内容"> <input type="submit" value="查询">
                 </form>
             </div>
-            <!-- 电影列表将通过服务器端渲染生成 -->
+
+            <!-- 电影列表区域 -->
+            <div id="movie-list">
+                <!-- 电影列表将通过AJAX加载 -->
+            </div>
+
+            <!-- 分页控件区域 -->
+            <div id="pagination" class="pagination">
+                <!-- 分页控件将通过AJAX加载 -->
+            </div>
         </div>
     </center>
+
     <script>
+        // 默认分页参数
+        const DEFAULT_PAGE = 1;
+        const DEFAULT_SIZE = 5;
+        let currentPage = DEFAULT_PAGE;
+        let currentSize = DEFAULT_SIZE;
+
+        // 加载分页电影数据
+        function loadMovies(page = DEFAULT_PAGE, size = DEFAULT_SIZE) {
+            // 显示加载状态
+            $('#movie-list').html('<p>加载中...</p>');
+
+            // AJAX 请求后端分页服务
+            $.get('./x123-png/moviesService', {
+                page: page,
+                size: size
+            }, function(response) {
+                displayMovies(response);
+            }).fail(function() {
+                $('#movie-list').html('<p>加载失败，请重试</p>');
+            });
+        }
+
+        // 显示电影列表
+        function displayMovies(moviePage) {
+            let html = '<div class="movies-container">';
+
+            if (moviePage.movies && moviePage.movies.length > 0) {
+                moviePage.movies.forEach(function(movie) {
+                    html += `
+                    <div class="movie-item">
+                        <h3>${movie.movieTitle || '未知标题'}</h3>
+                        <p><strong>年份:</strong> ${movie.releaseYear || '未知年份'}</p>
+                        <p><strong>地区:</strong> ${movie.region || '未知地区'}</p>
+                        <p><strong>类型:</strong> ${movie.genre || '未知类型'}</p>
+                        <p><strong>评分:</strong> ${movie.averageRating || '暂无评分'}</p>
+                        <p><strong>简介:</strong> ${movie.plotSummary ? movie.plotSummary.substring(0, 100) + '...' : '暂无简介'}</p>
+                        <button onclick="toggleFavorite(${movie.movieId}, this)">
+                            ${isMovieFavorited(movie.movieId) ? '取消收藏' : '收藏'}
+                        </button>
+                        <a href="./update_movie.html?id=${movie.movieId}">编辑</a>
+                    </div>
+                    `;
+                });
+            } else {
+                html += '<p>没有找到电影</p>';
+            }
+
+            html += '</div>';
+            $('#movie-list').html(html);
+
+            // 生成分页控件
+            generatePagination(moviePage);
+        }
+
+        // 生成分页控件
+        function generatePagination(moviePage) {
+            let html = '<div class="pagination-controls">';
+
+            if (moviePage.pages > 1) {
+                // 上一页按钮
+                if (moviePage.page > 1) {
+                    html += `<button onclick="loadMovies(${moviePage.page - 1}, ${moviePage.size})">上一页</button>`;
+                }
+
+                // 页码按钮
+                for (let i = 1; i <= moviePage.pages; i++) {
+                    if (i === moviePage.page) {
+                        html += `<button class="active-page">${i}</button>`;
+                    } else {
+                        html += `<button onclick="loadMovies(${i}, ${moviePage.size})">${i}</button>`;
+                    }
+                }
+
+                // 下一页按钮
+                if (moviePage.page < moviePage.pages) {
+                    html += `<button onclick="loadMovies(${moviePage.page + 1}, ${moviePage.size})">下一页</button>`;
+                }
+
+                html += `<span class="page-info">第 ${moviePage.page} 页，共 ${moviePage.pages} 页</span>`;
+            } else {
+                html += '<span class="page-info">共 1 页</span>';
+            }
+
+            html += '</div>';
+            $('#pagination').html(html);
+        }
+
+        // 检查电影是否已被收藏 (简化实现)
+        function isMovieFavorited(movieId) {
+            // 这里可以实现检查收藏状态的逻辑
+            return false;
+        }
+
+        // 收藏/取消收藏功能
         function toggleFavorite(movieId, element) {
+            const isFavorite = element.textContent.includes('取消收藏');
+            const action = isFavorite ? 'remove' : 'add';
+
             fetch('./toggleFavorite', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: 'movieId=' + movieId + '&action=' + (element.textContent.includes('收藏') ? 'add' : 'remove')
+                body: 'movieId=' + movieId + '&action=' + action
             })
             .then(response => response.json())
             .then(data => {
                 if(data.success) {
                     alert(data.message);
                     // 更新按钮文本
-                    if(element.textContent.includes('收藏')) {
+                    if(action === 'add') {
                         element.textContent = '取消收藏';
                     } else {
                         element.textContent = '收藏';
@@ -51,6 +158,11 @@
                 alert('网络错误，请重试');
             });
         }
+
+        // 页面加载完成后加载第一页数据
+        $(document).ready(function() {
+            loadMovies(currentPage, currentSize);
+        });
     </script>
 </body>
 </html>

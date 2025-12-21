@@ -100,4 +100,26 @@ public class HtmlHelper {
         sb.append("</table>");
         return sb.toString();
     }
+
+    public static String createPager(String url, int pages, int page, int size) {
+        //  <上一页   1，2，3，4，5  下一页>
+        StringBuilder sb = new StringBuilder();
+        sb.append("<div class='pager'>\n");
+        if (page != 1) {
+            sb.append(String.format("<a href='%s&page=%s&size=%s'>", url, page-1, size))
+                    .append("<上一页").append("</a>&nbsp;&nbsp;&nbsp;&nbsp;\n");
+        }
+        for (int i=1; i<=pages; i++) {
+            if (i == page) {
+                sb.append("<b>").append(i).append("</b>&nbsp;&nbsp;\n");
+            } else {
+                sb.append(String.format("<a href='%s&page=%s&size=%s'>\n", url, i, size)).append(i).append("</a>&nbsp;&nbsp;\n");
+            }
+        }
+        if (page != pages) {
+            sb.append(String.format("&nbsp;&nbsp;&nbsp;&nbsp;<a href='%s&page=%s&size=%s'>", url, page+1, size)).append("下一页>").append("</a>\n");
+        }
+        sb.append("</div>\n");
+        return sb.toString();
+    }
 }

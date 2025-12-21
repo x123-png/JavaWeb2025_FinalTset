@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="./css/movie.css" />
     <link href="./css/bootstrap.min.css" rel="stylesheet">
     <script language="JavaScript" src="./lib/jquery-3.7.1.min.js"></script>
-    <script language="JavaScript" src="./lib/bookstore.js"></script>
+    <script language="JavaScript" src="lib/movie_list.js"></script>
     <script language="JavaScript" src="./lib/bootstrap.bundle.min.js"></script>
 </head>
 <body id="index-body">
@@ -18,8 +18,15 @@
                 <a href="./login.html" class="auth-btn login-btn">登录</a>
                 <a href="./register.html" class="auth-btn register-btn">注册</a>
                 <a href="./x123-png/logout" class="auth-btn logout-btn">退出</a>
+                <div id="movieTableContainer"></div>
             </div>
         </div>
     </div>
 </body>
+<script>
+    $(document).ready(startup);
+    function startup() {
+        getMovies(1, 6);
+    }
+</script>
 </html>

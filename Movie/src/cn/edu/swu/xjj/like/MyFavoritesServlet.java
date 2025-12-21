@@ -128,7 +128,7 @@ public class MyFavoritesServlet extends HttpServlet {
     </center>
     <script>
         function toggleFavorite(movieId, element) {
-            fetch('../toggleFavorite', {
+            fetch('./toggleFavorite', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

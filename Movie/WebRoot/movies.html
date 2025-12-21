@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>电影列表 - 映界</title>
+    <link rel="stylesheet" href="./css/movie.css" />
+    <script src="./lib/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <center>
+        <div class="page-container">
+            <h1>欢迎访问映界</h1>
+            <div class="nav-links">
+                <a href="./add_movie.html"> 添加电影 </a>
+                <a href="./movies"> 显示列表 </a>
+                <a href="./myFavorites"> 我的收藏 </a>
+                <a href="./x123-png/logout"> 退出系统 </a>
+            </div>
+            <div class="search-form">
+                <form action="./searchMovie" method="get">
+                    <input type="text" name="content" placeholder="输入搜索内容"> <input type="submit" value="查询">
+                </form>
+            </div>
+            <!-- 电影列表将通过服务器端渲染生成 -->
+        </div>
+    </center>
+    <script>
+        function toggleFavorite(movieId, element) {
+            fetch('./toggleFavorite', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'movieId=' + movieId + '&action=' + (element.textContent.includes('收藏') ? 'add' : 'remove')
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert(data.message);
+                    // 更新按钮文本
+                    if(element.textContent.includes('收藏')) {
+                        element.textContent = '取消收藏';
+                    } else {
+                        element.textContent = '收藏';
+                    }
+                } else {
+                    alert('操作失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('网络错误，请重试');
+            });
+        }
+    </script>
+</body>
+</html>

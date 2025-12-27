@@ -25,7 +25,8 @@ public class DatabaseService {
     public void init() {
         dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/movie_list?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/movie_list?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");  //IPv4：10.65.206.47
+//        dataSource.setUrl("jdbc:mysql://10.65.206.47:3306/movie_list?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");
         dataSource.setUsername("root");
         dataSource.setPassword("51211mysql@");
 

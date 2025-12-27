@@ -63,8 +63,20 @@
 
             if (moviePage.movies && moviePage.movies.length > 0) {
                 moviePage.movies.forEach(function(movie) {
+                    // 处理图片路径
+                    let picturePath = './assets/img/portfolio/thumbnails/1.jpg'; // 默认图片
+                    if (movie.picture) {
+                        if (movie.picture.startsWith('http')) {
+                            picturePath = movie.picture;
+                        } else if (movie.picture.startsWith('/')) {
+                            picturePath = '.' + movie.picture;
+                        } else {
+                            picturePath = './upload/' + movie.picture;
+                        }
+                    }
                     html += `
                     <div class="movie-item">
+                        <img src="${picturePath}" alt="${movie.movieTitle || '电影海报'}" onerror="this.onerror=null; this.src='./assets/img/portfolio/thumbnails/1.jpg';" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;" />
                         <h3>${movie.movieTitle || '未知标题'}</h3>
                         <p><strong>年份:</strong> ${movie.releaseYear || '未知年份'}</p>
                         <p><strong>地区:</strong> ${movie.region || '未知地区'}</p>

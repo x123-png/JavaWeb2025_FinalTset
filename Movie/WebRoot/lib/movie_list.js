@@ -46,11 +46,17 @@ function showMovies(data, status) {
 
         // 添加海报图片，如果存在的话
         if (movie.picture) {
-            var img = $("<img class='img-fluid rounded-3 mb-2' src='upload/" + movie.picture + "' alt='" + movie.movieTitle + "' style='height: 250px; object-fit: cover;'>");
+            // 检查图片路径，如果包含完整URL则直接使用，否则拼接上传目录路径
+            var picturePath = movie.picture;
+            if (!movie.picture.startsWith('http') && !movie.picture.startsWith('/')) {
+                picturePath = './upload/' + movie.picture;
+            } else if (movie.picture.startsWith('/')) {
+                picturePath = '.' + movie.picture;
+            }
+            var img = $("<img class='img-fluid rounded-3 mb-2' src='" + picturePath + "' alt='" + movie.movieTitle + "' style='height: 250px; object-fit: cover;' onerror='this.onerror=null; this.src=\"./assets/img/portfolio/thumbnails/1.jpg\";'>");
         } else {
-            // 如果没有图片，创建一个占位符
-            var img = $("<div class='img-fluid rounded-3 mb-2 bg-primary d-flex align-items-center justify-content-center' style='height: 250px;'>" +
-                        "<span class='text-white text-center'>无海报<br><small>" + movie.movieTitle + "</small></span></div>");
+            // 如果没有图片，使用默认占位图
+            var img = $("<img class='img-fluid rounded-3 mb-2' src='./assets/img/portfolio/thumbnails/1.jpg' alt='" + movie.movieTitle + "' style='height: 250px; object-fit: cover;'>");
         }
 
         // 添加电影信息覆盖层

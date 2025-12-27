@@ -19,7 +19,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-@WebServlet(urlPatterns = "/x123-png/moviesService")
+//@WebServlet(urlPatterns = "/x123-png/moviesService")
+@WebServlet(urlPatterns = "/movies")
 public class MovieService extends HttpServlet {
     public final static int DEFAULT_PAGE_SIZE = 5;
     public final static int DEFAULT_PAGE = 1;
